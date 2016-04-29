@@ -1,5 +1,5 @@
-name: com.shaneschulte.windoom.clans.WindoomClans
+name: WindoomClans
 version: 1.0-SNAPSHOT
 description: Lightweight clan plugin
 author: CoolGamrSms
-main: com.shaneschulte.windoom.clans.com.shaneschulte.windoom.clans.WindoomClans
+main: com.shaneschulte.windoom.clans.WindoomClans

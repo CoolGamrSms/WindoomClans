@@ -4,7 +4,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 
 /**
- * Created by Shane Schulte (CoolGamrSms on 4/27/2016.
+ * @author CoolGamrSms
  */
 public class MsgUtils {
 

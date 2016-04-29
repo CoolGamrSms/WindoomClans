@@ -1,8 +1,11 @@
 package com.shaneschulte.windoom.clans;
 
+import java.util.UUID;
+
 /**
- * Created by Shane Schulte (CoolGamrSms on 4/27/2016.
+ * @author CoolGamrSms
  */
 public class ClanPlayer {
     private Clan clan;
+    private UUID player;
 }
