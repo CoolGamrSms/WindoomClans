@@ -3,3 +3,7 @@ version: 1.0-SNAPSHOT
 description: Lightweight clan plugin
 author: CoolGamrSms
 main: com.shaneschulte.windoom.clans.WindoomClans
+commands:
+  clan:
+    description: The clans plugin command.
+    usage: /clan ? [page]

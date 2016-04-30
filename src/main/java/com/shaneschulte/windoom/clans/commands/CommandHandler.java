@@ -1,76 +1,76 @@
 package com.shaneschulte.windoom.clans.commands;
 
-import com.shaneschulte.windoom.clans.commands.CommandInterface;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 
-//The class will implement CommandExecutor.
+/**
+ * @author CoolGamrSms
+ */
 public class CommandHandler implements CommandExecutor
 {
 
     //This is where we will store the commands
-    private static HashMap<String, CommandInterface> commands = new HashMap<String, CommandInterface>();
+    private static HashMap<String, BaseCommand> commands;
+    private JavaPlugin plugin;
 
-    //Register method. When we register commands in our onEnable() we will use this.
-    public void register(String name, CommandInterface cmd) {
+    public JavaPlugin getPlugin() {
+        return plugin;
+    }
 
-        //When we register the command, this is what actually will put the command in the hashmap.
+    public CommandHandler(JavaPlugin plugin) {
+        this.plugin = plugin;
+        commands = new HashMap<String, BaseCommand>();
+    }
+
+    public BaseCommand register(String name, BaseCommand cmd) {
         commands.put(name, cmd);
-    }
-
-    //This will be used to check if a string exists or not.
-    public boolean exists(String name) {
-
-        //To actually check if the string exists, we will return the hashmap
-        return commands.containsKey(name);
-    }
-
-    //Getter method for the Executor.
-    public CommandInterface getExecutor(String name) {
-
-        //Returns a command in the hashmap of the same name.
-        return commands.get(name);
+        return cmd;
     }
 
     public boolean onCommand(CommandSender sender, Command cmd, String commandLabel, String[] args) {
 
-        //For example, in each command, it will check if the sender is a player and if not, send an error message.
-        if(sender instanceof Player) {
-
-            //If there aren't any arguments, what is the command name going to be? For this example, we are going to call it /example.
-            //This means that all commands will have the base of /example.
-            if(args.length == 0) {
-                getExecutor(commandLabel).onCommand(sender, cmd, commandLabel, args);
-                return true;
-            }
-
-            //What if there are arguments in the command? Such as /example args
-            if(args.length > 0) {
-
-                //If that argument exists in our registration in the onEnable();
-                if(exists(args[0])){
-
-                    //Get The executor with the name of args[0]. With our example, the name of the executor will be args because in
-                    //the command /example args, args is our args[0].
-                    getExecutor(args[0]).onCommand(sender, cmd, commandLabel, args);
-                    return true;
-                } else {
-
-                    //We want to send a message to the sender if the command doesn't exist.
-                    sender.sendMessage(ChatColor.RED + "This command doesn't exist!");
-                    return true;
-                }
-            }
-        } else {
+        if(!(sender instanceof Player)) {
             sender.sendMessage(ChatColor.RED + "You must be a player to use this command.");
             return true;
         }
-        return false;
+
+        BaseCommand bcmd;
+        String[] newArgs;
+        int argc = args.length;
+
+        //Root command
+        if(args.length == 0) {
+            bcmd = commands.get(cmd.getName());
+            newArgs = args;
+        }
+        //Sub command
+        else if(commands.containsKey(args[0])) {
+            bcmd = commands.get(args[0]);
+            newArgs = new String[--argc];
+            System.arraycopy(args, 1, newArgs, 0, argc);
+
+        }
+        else {
+            sender.sendMessage(ChatColor.RED + "Command not found. Type /clan ? for help.");
+            return true;
+        }
+
+        //Execute command
+        try {
+            bcmd.checkArgs(argc);
+            bcmd.onCommand(sender, newArgs, this);
+        } catch(CommandException e) {
+            sender.sendMessage(ChatColor.RED + e.getWhat());
+            if(e instanceof CommandUsageException) sender.sendMessage(ChatColor.RED + e.getUsage());
+            return true;
+        }
+        return true;
     }
 
 }
