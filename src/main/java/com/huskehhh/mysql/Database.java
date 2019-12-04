@@ -93,9 +93,9 @@ public abstract class Database {
 
         Statement statement = connection.createStatement();
 
-        ResultSet result = statement.executeQuery(query);
+        statement.execute(query);
 
-        return result;
+        return statement.getResultSet();
     }
 
     /**

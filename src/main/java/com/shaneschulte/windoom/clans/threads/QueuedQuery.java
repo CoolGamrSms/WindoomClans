@@ -1,18 +1,16 @@
 package com.shaneschulte.windoom.clans.threads;
 
-import com.shaneschulte.windoom.clans.commands.CallbackCommand;
-
 /**
  * @author CoolGamrSms
  */
 public class QueuedQuery {
 
-    private CallbackCommand cbcmd;
+    private RunnableRowSet call;
     private String query;
     private boolean callback;
 
-    public QueuedQuery(String query, CallbackCommand cbcmd) {
-        this.cbcmd = cbcmd;
+    public QueuedQuery(String query, RunnableRowSet call) {
+        this.call = call;
         this.query = query;
         this.callback = true;
     }
@@ -30,7 +28,8 @@ public class QueuedQuery {
         return callback;
     }
 
-    public CallbackCommand getCallback() {
-        return cbcmd;
+    public RunnableRowSet getCallback() {
+        return call;
     }
+
 }

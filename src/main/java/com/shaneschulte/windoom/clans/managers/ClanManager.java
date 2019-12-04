@@ -2,6 +2,8 @@ package com.shaneschulte.windoom.clans.managers;
 
 import com.shaneschulte.windoom.clans.Clan;
 import com.shaneschulte.windoom.clans.ClanPlayer;
+import com.shaneschulte.windoom.clans.WindoomClans;
+import com.shaneschulte.windoom.clans.threads.QueuedQuery;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -27,14 +29,13 @@ public class ClanManager {
 
     public void loadOnlinePlayerData() {
         for(Player p : Bukkit.getOnlinePlayers()) {
-            ClanPlayer cp = new ClanPlayer(p.getUniqueId());
-            online.put(p.getUniqueId(), cp);
+            PlayerLoader.load(p.getUniqueId()); //Incurs a MySQL async read
         }
     }
 
     public ClanPlayer getClanPlayer(UUID uniqueId) throws NullPointerException {
         if(online.get(uniqueId) == null) {
-            //TODO: Load ClanPlayer from SQL
+            PlayerLoader.load(uniqueId); //Incurs a MySQL async read
             throw new NullPointerException();
         }
         return online.get(uniqueId);
@@ -61,5 +62,9 @@ public class ClanManager {
 
     public HashMap<UUID, Clan> getInvites() {
         return invites;
+    }
+
+    public HashMap<UUID, ClanPlayer> getPlayerMap() {
+        return online;
     }
 }

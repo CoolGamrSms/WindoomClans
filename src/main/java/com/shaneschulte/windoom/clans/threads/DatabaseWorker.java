@@ -5,8 +5,11 @@ import com.huskehhh.mysql.mysql.MySQL;
 import com.huskehhh.mysql.sqlite.SQLite;
 import com.shaneschulte.windoom.clans.WindoomClans;
 import com.shaneschulte.windoom.clans.managers.SettingsManager;
+import com.sun.rowset.CachedRowSetImpl;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
+import javax.sql.rowset.CachedRowSet;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -78,10 +81,14 @@ public class DatabaseWorker implements Runnable {
             try {
                 if(qq.isCallback()) {
                     ResultSet res = database.querySQL(qq.getQuery());
-                    qq.getCallback().callback(res);
+                    CachedRowSet rows = new CachedRowSetImpl();
+                    rows.populate(res);
+                    qq.getCallback().setData(rows);
+                    BukkitScheduler scheduler = plugin.getServer().getScheduler();
+                    scheduler.runTask(plugin, qq.getCallback());
                 }
                 else {
-                    database.updateSQL(qq.getQuery());
+                    database.querySQL(qq.getQuery());
                 }
             } catch (SQLException e) {
                 e.printStackTrace();

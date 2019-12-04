@@ -10,7 +10,7 @@ import org.bukkit.command.CommandSender;
  */
 public class ClanHelpCommand extends BaseCommand {
     public ClanHelpCommand() {
-        super("?", "[page] - gives help on all clan commands", 0, 1);
+        super("?", "[page] - lists all clan commands", 0, 1);
     }
 
     public void onCommand(CommandSender sender, String[] args, CommandHandler handler) throws CommandException {

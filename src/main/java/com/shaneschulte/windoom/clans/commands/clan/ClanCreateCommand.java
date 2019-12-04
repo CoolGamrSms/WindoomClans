@@ -9,14 +9,19 @@ import com.shaneschulte.windoom.clans.commands.CommandHandler;
 import com.shaneschulte.windoom.clans.managers.ClanManager;
 import com.shaneschulte.windoom.clans.managers.SettingsManager;
 import com.shaneschulte.windoom.clans.threads.QueuedQuery;
+import com.shaneschulte.windoom.clans.threads.RunnableRowSet;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import javax.sql.rowset.CachedRowSet;
+
 /**
  * @author CoolGamrSms
  */
-public class ClanCreateCommand extends BaseCommand {
+public class ClanCreateCommand extends BaseCommand implements RunnableRowSet {
+
+    private CachedRowSet data;
 
     public ClanCreateCommand() {
         super("create", "[prefix] [name] - creates a new clan", 2);
@@ -37,10 +42,18 @@ public class ClanCreateCommand extends BaseCommand {
         String prefix = args[0].replaceAll("'", "").replaceAll("`", "");
         cm.createClan(args[0], name, cp);
 
-        QueuedQuery qq = new QueuedQuery("INSERT INTO clans (name, prefix, elo) VALUES ('"+name+"', '"+prefix+"', "+settings.getStartingElo()+")");
+        QueuedQuery qq = new QueuedQuery("INSERT INTO clans (name, prefix, elo) VALUES ('"+name+"', '"+prefix+"', "+settings.getStartingElo()+"); SELECT * FROM clans WHERE ID=LAST_INSERT_ID();", this);
         ((WindoomClans)handler.getPlugin()).queueQuery(qq);
 
         sender.sendMessage(ChatColor.GREEN + "You were charged " + settings.getClanCost());
         sender.sendMessage(ChatColor.GREEN + "Your clan '" + ChatColor.WHITE + name + ChatColor.GREEN + "' was successfully created!");
+    }
+
+    public void setData(CachedRowSet data) {
+        this.data = data;
+    }
+
+    public void run() {
+
     }
 }
